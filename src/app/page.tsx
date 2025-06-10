@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AppHeader from "@/components/layout/app-header";
 import MainToolbar from "@/components/layout/main-toolbar";
 import PdfPanel from "@/components/pdf/pdf-panel";
@@ -11,6 +11,7 @@ export default function TwilightPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10; // Mock total pages
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [pdfData, setPdfData] = useState<string | ArrayBuffer | null>(null);
   const { toast } = useToast();
 
   const handlePageChange = (page: number) => {
@@ -38,6 +39,10 @@ export default function TwilightPage() {
       return newTool;
     });
   };
+
+  const handleFileUpload = useCallback((data: string | ArrayBuffer | null) => {
+    setPdfData(data);
+  }, []);
   
   const isPanActive = selectedTool === "pan";
   const handlePanToolSelect = () => handleToolSelect("pan");
@@ -61,15 +66,14 @@ export default function TwilightPage() {
       />
       <main className="flex-1 flex flex-row overflow-hidden p-4 gap-4">
         <PdfPanel 
-          title="Original PDF" 
-          imageUrl="https://placehold.co/800x1131.png" 
-          imageHint="document paper" 
-        />
+          title="Original PDF"
+          pdfData={pdfData}
+          onFileUpload={handleFileUpload} imageUrl={""}        />
         <PdfPanel 
-          title="Editable PDF" 
-          imageUrl="https://placehold.co/800x1131.png" 
-          imageHint="document form" 
-          isEditable={true} 
+          title="Editable PDF"
+          pdfData={pdfData}
+          onFileUpload={handleFileUpload}
+          isEditable={true}
         />
       </main>
     </div>
